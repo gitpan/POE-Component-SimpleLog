@@ -1,4 +1,4 @@
-POE/Component/SimpleLog version 1.01
+POE/Component/SimpleLog version 1.02
 ====================================
 
 Think of this module as Log::Log4perl ( Log4j ).
@@ -17,14 +17,15 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-	POE > 0.20
-		POE::Session
+	POE
 
 	Carp
 
+	Time::HiRes
+
 COPYRIGHT AND LICENCE
 
-Copyright 2003 by Apocalypse
+Copyright 2004 by Apocalypse
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

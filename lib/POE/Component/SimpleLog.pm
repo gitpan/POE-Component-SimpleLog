@@ -6,11 +6,10 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 # Import what we need from the POE namespace
 use POE;			# For the constants
-use POE::Session;		# To create our own :)
 
 # Other miscellaneous modules we need
 use Carp;
@@ -64,7 +63,7 @@ sub new {
 		# Check if it is defined
 		if ( defined $PRECISION ) {
 			# Use Time::HiRes
-			require 'Time::HiRes';
+			require Time::HiRes;
 		}
 	} else {
 		# Set it to regular
@@ -481,6 +480,10 @@ POE::Component::SimpleLog - Perl extension to manage a simple logging system for
 
 =head1 CHANGES
 
+=head2 1.02
+
+	Caught minor typo when loading Time::HiRes
+
 =head2 1.01
 
 	Initial Revision
@@ -677,7 +680,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003 by Apocalypse
+Copyright 2004 by Apocalypse
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

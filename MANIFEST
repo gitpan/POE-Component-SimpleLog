@@ -4,3 +4,4 @@ MANIFEST
 README
 lib/POE/Component/SimpleLog.pm
 t/1.t
+META.yml                                 Module meta-data (added by MakeMaker)

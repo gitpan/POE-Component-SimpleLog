@@ -1,6 +1,8 @@
 Revision history for Perl extension POE::Component::SimpleLog.
 
+1.02  Mon Apr 26 17:15:32 2004
+	- Fixed minor typo regarding loading of Time::HiRes
+
 1.01  Thu Nov 20 00:35:48 2003
 	- original version; created by h2xs 1.22 with options
 		-AX -n POE::Component::SimpleLog
-
