@@ -6,10 +6,10 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 # Import what we need from the POE namespace
-use POE;			# For the constants
+use POE;
 
 # Other miscellaneous modules we need
 use Carp;
@@ -71,8 +71,8 @@ sub new {
 	}
 
 	# Anything left over is unrecognized
-	if ( keys %opt > 0 ) {
-		if ( DEBUG ) {
+	if ( DEBUG ) {
+		if ( keys %opt > 0 ) {
 			croak 'Unrecognized options were present in POE::Component::SimpleLog->new -> ' . join( ', ', keys %opt );
 		}
 	}
@@ -82,9 +82,7 @@ sub new {
 		# Our subroutines
 		'inline_states'	=>	{
 			# Maintenance events
-			'_start'	=>	sub {	# Create an alias for ourself
-							$_[KERNEL]->alias_set( $ALIAS );
-						},
+			'_start'	=>	\&StartLog,
 			'_stop'		=>	sub {},
 
 			# Register a log
@@ -96,6 +94,9 @@ sub new {
 
 			# LOG SOMETHING!
 			'LOG'		=>	\&Log,
+
+			# We are done!
+			'SHUTDOWN'	=>	\&StopLog,
 		},
 
 		# Set up the heap for ourself
@@ -108,6 +109,8 @@ sub new {
 
 			# Who wants to get *ALL* logs?
 			'ALLLOGS'	=>	{},
+
+			'ALIAS'		=>	$ALIAS,
 		},
 	) or die 'Unable to create a new session!';
 
@@ -183,6 +186,9 @@ sub Register {
 			$_[HEAP]->{'LOGS'}->{ $args{'LOGNAME'} }->{ $args{'SESSION'} }->{ $args{'EVENT'} } = 1;
 		}
 	}
+
+	# All done!
+	return 1;
 }
 
 # Delete a watcher
@@ -288,6 +294,9 @@ sub UnRegisterSession {
 			delete $_[HEAP]->{'ALLLOGS'}->{ $TargetSession };
 		}
 	}
+
+	# All done!
+	return 1;
 }
 
 # The core part of this module :)
@@ -387,6 +396,31 @@ sub Log {
 			}
 		}
 	}
+
+	# All done!
+	return 1;
+}
+
+# Starts the logger!
+sub StartLog {
+	# Create an alias for ourself
+	$_[KERNEL]->alias_set( $_[HEAP]->{'ALIAS'} );
+
+	# All done!
+	return 1;
+}
+
+# Stops the logger
+sub StopLog {
+	# Remove our alias
+	$_[KERNEL]->alias_remove( $_[HEAP]->{'ALIAS'} );
+
+	# Clear our data
+	delete $_[HEAP]->{'LOGS'};
+	delete $_[HEAP]->{'ALLLOGS'};
+
+	# All done!
+	return 1;
 }
 
 # End of module
@@ -459,7 +493,7 @@ POE::Component::SimpleLog - Perl extension to manage a simple logging system for
 				$_[KERNEL]->post( 'MyLog', 'LOG', 'LAF', 'Wow, what a LAF!' );
 
 				# We are done!
-				$_[KERNEL]->post( 'MyLog', 'shutdown' );
+				$_[KERNEL]->post( 'MyLog', 'SHUTDOWN' );
 			},
 
 			'GotFOOlog' => \&gotFOO,
@@ -479,6 +513,12 @@ POE::Component::SimpleLog - Perl extension to manage a simple logging system for
 	Very simple, and flexible logging system tailored for POE.
 
 =head1 CHANGES
+
+=head2 1.03
+
+	Rearranged DEBUG printouts
+	Fixed the issue of shutdown not actually working, thanks to Eric!
+	Renamed shutdown to SHUTDOWN
 
 =head2 1.02
 
@@ -645,13 +685,13 @@ SimpleLog is so simple, there are only 5 events available.
 
 	$_[KERNEL]->post( 'SimpleLog', 'LOG', 'CONNECTION', 'A Client just connected!' );
 
-=item C<shutdown>
+=item C<SHUTDOWN>
 
-	This is the generic shutdown routine, it will stop all logging.
+	This is the generic SHUTDOWN routine, it will stop all logging.
 
 	Here's an example:
 
-	$_[KERNEL]->post( 'SimpleLog', 'shutdown' );
+	$_[KERNEL]->post( 'SimpleLog', 'SHUTDOWN' );
 
 =back
 
@@ -680,7 +720,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2004 by Apocalypse
+Copyright 2005 by Apocalypse
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
