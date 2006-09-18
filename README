@@ -1,5 +1,5 @@
-POE/Component/SimpleLog version 1.03
-====================================
+POE/Component/SimpleLog
+=======================
 
 Think of this module as Log::Log4perl ( Log4j ).
 But simplified too much and shoehorned into POE's framework...
@@ -13,19 +13,7 @@ To install this module type the following:
    make test
    make install
 
-DEPENDENCIES
+MORE INFO
 
-This module requires these other modules and libraries:
-
-	POE
-
-	Carp
-
-	Time::HiRes
-
-COPYRIGHT AND LICENCE
-
-Copyright 2005 by Apocalypse
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+	# After installing:
+	perldoc POE::Component::SimpleLog

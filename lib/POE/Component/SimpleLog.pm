@@ -6,7 +6,7 @@ use strict qw(subs vars refs);				# Make sure we can't mess up
 use warnings FATAL => 'all';				# Enable warnings to catch errors
 
 # Initialize our version
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 
 # Import what we need from the POE namespace
 use POE;
@@ -511,22 +511,6 @@ POE::Component::SimpleLog - Perl extension to manage a simple logging system for
 =head1 ABSTRACT
 
 	Very simple, and flexible logging system tailored for POE.
-
-=head1 CHANGES
-
-=head2 1.03
-
-	Rearranged DEBUG printouts
-	Fixed the issue of shutdown not actually working, thanks to Eric!
-	Renamed shutdown to SHUTDOWN
-
-=head2 1.02
-
-	Caught minor typo when loading Time::HiRes
-
-=head2 1.01
-
-	Initial Revision
 
 =head1 DESCRIPTION
 
