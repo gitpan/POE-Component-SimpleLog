@@ -1,5 +1,11 @@
 Revision history for Perl extension POE::Component::SimpleLog.
 
+* 1.05
+
+	Kwalitee-related fixes
+
+	fixed a bug with unregistration, thanks Eric Hacker!
+
 * 1.04
 
 	Kwalitee-related fixes

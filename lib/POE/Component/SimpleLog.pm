@@ -1,12 +1,9 @@
 # Declare our package
 package POE::Component::SimpleLog;
+use strict; use warnings;
 
-# Standard stuff to catch errors
-use strict qw(subs vars refs);				# Make sure we can't mess up
-use warnings FATAL => 'all';				# Enable warnings to catch errors
-
-# Initialize our version
-our $VERSION = '1.04';
+# Initialize our version $LastChangedRevision: 16 $
+our $VERSION = '1.05';
 
 # Import what we need from the POE namespace
 use POE;
@@ -229,9 +226,12 @@ sub UnRegister {
 		if ( exists $_[HEAP]->{'ALLLOGS'}->{ $args{'SESSION'} } ) {
 			# Scan for the proper event!
 			foreach my $evnt ( keys %{ $_[HEAP]->{'ALLLOGS'}->{ $args{'SESSION'} } } ) {
-				if ( $_[HEAP]->{'ALLLOGS'}->{ $args{'SESSION'} }->{ $evnt } eq $args{'EVENT'} ) {
+				if ( $evnt eq $args{'EVENT'} ) {
 					# Found a match, delete it!
 					delete $_[HEAP]->{'ALLLOGS'}->{ $args{'SESSION'} }->{ $evnt };
+					if ( scalar keys %{ $_[HEAP]->{'ALLLOGS'}->{ $args{'SESSION'} } } == 0 ) {
+						delete $_[HEAP]->{'ALLLOGS'}->{ $args{'SESSION'} };
+					}
 
 					# Return success
 					return 1;
@@ -245,9 +245,12 @@ sub UnRegister {
 			if ( exists $_[HEAP]->{'LOGS'}->{ $args{'LOGNAME'} }->{ $args{'SESSION'} } ) {
 				# Scan for the proper event!
 				foreach my $evnt ( keys %{ $_[HEAP]->{'LOGS'}->{ $args{'LOGNAME'} }->{ $args{'SESSION'} } } ) {
-					if ( $_[HEAP]->{'LOGS'}->{ $args{'LOGNAME'} }->{ $args{'SESSION'} }->{ $evnt } eq $args{'EVENT'} ) {
+					if ( $evnt eq $args{'EVENT'} ) {
 						# Found a match, delete it!
 						delete $_[HEAP]->{'LOGS'}->{ $args{'LOGNAME'} }->{ $args{'SESSION'} }->{ $evnt };
+						if ( scalar keys %{ $_[HEAP]->{'LOGS'}->{ $args{'LOGNAME'} }->{ $args{'SESSION'} } } == 0 ) {
+							delete $_[HEAP]->{'LOGS'}->{ $args{'LOGNAME'} }->{ $args{'SESSION'} };
+						}
 
 						# Return success
 						return 1;
@@ -312,6 +315,14 @@ sub Log {
 		}
 	}
 
+	# Figure out the time
+	my $time;
+	if ( defined $_[HEAP]->{'PRECISION'} ) {
+		$time = [ Time::HiRes::gettimeofday ];
+	} else {
+		$time = time();
+	}
+
 	# Search for this log!
 	if ( exists $_[HEAP]->{'LOGS'}->{ $logname } ) {
 		# Okay, loop over each targetsession, checking if it is valid
@@ -325,14 +336,6 @@ sub Log {
 			} else {
 				# Fire off all the events
 				foreach my $event ( keys %{ $_[HEAP]->{'LOGS'}->{ $logname }->{ $TargetSession } } ) {
-					# Figure out the time
-					my $time;
-					if ( defined $_[HEAP]->{'PRECISION'} ) {
-						$time = [ Time::HiRes::gettimeofday ];
-					} else {
-						$time = time();
-					}
-
 					# We call events with 5 arguments
 					# ARG0 -> CALLER_FILE
 					# ARG1 -> CALLER_LINE
@@ -364,14 +367,6 @@ sub Log {
 				} else {
 					# Get all the events
 					foreach my $event ( keys %{ $_[HEAP]->{'ALLLOGS'}->{ $TargetSession } } ) {
-						# Figure out the time
-						my $time;
-						if ( defined $_[HEAP]->{'PRECISION'} ) {
-							$time = [ Time::HiRes::gettimeofday ];
-						} else {
-							$time = time();
-						}
-
 						# We call events with 5 arguments
 						# ARG0 -> CALLER_FILE
 						# ARG1 -> CALLER_LINE
@@ -704,7 +699,7 @@ Apocalypse E<lt>apocal@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2005 by Apocalypse
+Copyright 2008 by Apocalypse
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
